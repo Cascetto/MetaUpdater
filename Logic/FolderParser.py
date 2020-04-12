@@ -20,17 +20,26 @@ class FolderParser:
         vector containing the desired extension
         """
 
-        # append, if needed, the '\' mark to the path
-        if abs_path[len(abs_path) - 1] != '\\':
-            abs_path += '\\'
+        # append, if needed, the folder separator to the path
+        # if os.name == "posix":
+            # posix system => filesystem separator '/'
+            # if abs_path[len(abs_path) - 1] != '/':
+            #     abs_path += '/'
+        # else:
+            # windows system => filesystem separator '\'
+            # if abs_path[len(abs_path) - 1] != '\\':
+            #     abs_path += '\\'
+        if abs_path[len(abs_path) - 1] != os.path.sep:
+            abs_path += os.path.sep
         self.path = abs_path
         # if there is only one filter, convert it to tuple
         if not isinstance(filters, tuple):
             filters = (filters,)
         self.filters = filters
-        self.sub_folders = []
-        self.file_list = []
+        self.sub_folders = list()
+        self.file_list = list()
         self.update()
+        #todo remove log
         print("\nCreated\n" + self.path)
 
     @staticmethod
@@ -72,10 +81,29 @@ class FolderParser:
         recursive function, call itself in the subfolders instance
         :return a list of all files (including the one in subfolders):
         """
-        result = self.file_list
+        result = self.__make_tuple_list()
         for sub_folder in self.sub_folders:
             # get the files in subfloders
             sub_list = FolderParser(self.path + sub_folder, self.filters).get_all_file_names()
             if len(sub_list) > 0:
                 result += sub_list
         return result
+
+    def __make_tuple_list(self):
+        """
+        :return a list of tuple, containing the file name without extension and its path:
+        """
+        result = list()
+        for element in self.file_list:
+            result.append((FolderParser.__remove_ext(element), self.path + element))
+        return result
+
+    # todo consider removing
+    @staticmethod
+    def __remove_ext(file_name: str) -> str:
+        """
+        :param file_name:
+        :return: file name without extension
+        """
+        return file_name[0: file_name.rfind(".")]
+
