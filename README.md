@@ -1,5 +1,5 @@
 # MetaUpdater
-Music metadata updater using Python and Discogs API
+Music metadata updater using Python and Musixmatch API
 ##Usage
 `python3 MetaUpdater.py [--help] | [input_folder [output_folder]]`
 
